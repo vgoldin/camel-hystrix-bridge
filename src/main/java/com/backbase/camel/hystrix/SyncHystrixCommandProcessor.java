@@ -1,0 +1,103 @@
+package com.backbase.camel.hystrix;
+
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
+import org.apache.camel.RuntimeCamelException;
+
+import com.netflix.hystrix.HystrixCommand;
+import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.HystrixCommandKey;
+
+public class SyncHystrixCommandProcessor implements Processor {
+    private Processor actualProcessor;
+    private Processor fallbackProcessor;
+
+    /**
+     * Construct Synchronous (InOut MEP) Camel processor for Hystrix Command
+     * without Fallback processor
+     *
+     * @param actualProcessor the actual Camel processor that will be used to process the exchange
+     */
+    public SyncHystrixCommandProcessor(Processor actualProcessor) {
+        this(actualProcessor, null);
+    }
+
+    /**
+     * Construct Synchronous (InOut MEP) Camel processor for Hystrix Command
+     * with Fallback processor, that will be used in case of open circuit
+     *
+     * @param actualProcessor the actual Camel processor that will be used to process the exchange
+     * @param fallbackProcessor the fallback Camel processor that will be used in case of open circuit
+     */
+    public SyncHystrixCommandProcessor(Processor actualProcessor, Processor fallbackProcessor) {
+        this.actualProcessor = actualProcessor;
+        this.fallbackProcessor = fallbackProcessor;
+    }
+
+    @Override
+    public void process(Exchange exchange) throws Exception {
+        // -- execute synchronous Hystrix command
+        Object response  = new GenericCommand(exchange).execute();
+
+        // -- set the response to the Output message of the Camel exchange
+        exchange.getOut().setBody(response);
+    }
+
+    private class GenericCommand extends HystrixCommand<Object> {
+        private Exchange exchange;
+
+        /**
+         * Construct a generic command that will use the simple class name of the enclosed Camel Processor as a
+         * name of the command and routeId as a name of the execution group
+         *
+         * @param exchange the current Camel exchange
+         */
+        private GenericCommand(Exchange exchange) {
+            super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(exchange.getFromRouteId())).andCommandKey(
+                    HystrixCommandKey.Factory.asKey(actualProcessor.getClass().getSimpleName())));
+
+            this.exchange = exchange;
+        }
+
+        /**
+         * Execute <code>process()</code> of the enclosed Camel processor
+         *
+         * @return the response received from the underlying processor
+         */
+        @Override
+        protected Object run() {
+            return process(actualProcessor);
+        }
+
+        /**
+         * Get the fallback response in case of open circuit
+         * if fallback Camel Processor is supplied
+         *
+         * @return the response from the fallback Camel processor
+         */
+        @Override
+        protected Object getFallback() {
+            Object fallback;
+            if (fallbackProcessor != null) {
+                fallback = process(fallbackProcessor);
+            } else {
+                fallback = super.getFallback();
+            }
+
+            return fallback;
+        }
+
+        private Object process(Processor processor) {
+            Object result;
+            try {
+                processor.process(exchange);
+            } catch (Exception ex) {
+                throw new RuntimeCamelException(ex);
+            }
+
+            result = exchange.getIn().getBody();
+
+            return result;
+        }
+    }
+}
