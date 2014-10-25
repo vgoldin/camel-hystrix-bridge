@@ -2,6 +2,7 @@ package com.backbase.camel.hystrix;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
+import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.RuntimeCamelException;
 
@@ -41,13 +42,12 @@ public class SyncHystrixCommandProcessor implements Processor {
         exchange.setPattern(ExchangePattern.InOut);
 
         // -- execute synchronous Hystrix command
-        Object response  = new GenericCommand(exchange).execute();
+        Message response  = new GenericCommand(exchange).execute();
 
-        // -- set the response to the Output message of the Camel exchange
-        exchange.getOut().setBody(response);
+        exchange.setIn(response);
     }
 
-    private class GenericCommand extends HystrixCommand<Object> {
+    private class GenericCommand extends HystrixCommand<Message> {
         private Exchange exchange;
 
         /**
@@ -70,7 +70,7 @@ public class SyncHystrixCommandProcessor implements Processor {
          * @return the response received from the underlying processor
          */
         @Override
-        protected Object run() {
+        protected Message run() {
             return process(actualProcessor);
         }
 
@@ -81,8 +81,8 @@ public class SyncHystrixCommandProcessor implements Processor {
          * @return the response from the fallback Camel processor
          */
         @Override
-        protected Object getFallback() {
-            Object fallback;
+        protected Message getFallback() {
+            Message fallback;
             if (fallbackProcessor != null) {
                 fallback = process(fallbackProcessor);
             } else {
@@ -92,15 +92,15 @@ public class SyncHystrixCommandProcessor implements Processor {
             return fallback;
         }
 
-        private Object process(Processor processor) {
-            Object result;
+        private Message process(Processor processor) {
+            Message result;
             try {
                 processor.process(exchange);
             } catch (Exception ex) {
                 throw new RuntimeCamelException(ex);
             }
 
-            result = exchange.getIn().getBody();
+            result = exchange.getIn();
 
             return result;
         }
