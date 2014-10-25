@@ -48,13 +48,13 @@ public class SyncHystrixCommandProcessor implements Processor {
 
         /**
          * Construct a generic command that will use the simple class name of the enclosed Camel Processor as a
-         * name of the command and routeId as a name of the execution group
+         * name of the execution group and routeId as a name of the command
          *
          * @param exchange the current Camel exchange
          */
         private GenericCommand(Exchange exchange) {
-            super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(exchange.getFromRouteId())).andCommandKey(
-                    HystrixCommandKey.Factory.asKey(actualProcessor.getClass().getSimpleName())));
+            super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(actualProcessor.getClass().getSimpleName())).andCommandKey(
+                    HystrixCommandKey.Factory.asKey(exchange.getFromRouteId())));
 
             this.exchange = exchange;
         }
