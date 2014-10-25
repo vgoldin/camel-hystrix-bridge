@@ -100,4 +100,25 @@ public class SyncHystrixCommandProcessor implements Processor {
             return result;
         }
     }
+
+    /**
+     * DSL method to instantiate Synchronous Histrix Processor with Fallback processor
+     *
+     * @param actualProcessor the actual Camel processor that will be used to process the exchange
+     * @param fallbackProcessor the fallback Camel processor that will be used in case of open circuit
+     * @return the Synchronous Histrix Processor
+     */
+    public static Processor sync(Processor actualProcessor, Processor fallbackProcessor) {
+        return new SyncHystrixCommandProcessor(actualProcessor, fallbackProcessor);
+    }
+
+    /**
+     * DSL method to instantiate Synchronous Histrix Processor without Fallback processor
+     *
+     * @param actualProcessor the actual Camel processor that will be used to process the exchange
+     * @return the Synchronous Histrix Processor
+     */
+    public static Processor sync(Processor actualProcessor) {
+        return new SyncHystrixCommandProcessor(actualProcessor, null);
+    }
 }
