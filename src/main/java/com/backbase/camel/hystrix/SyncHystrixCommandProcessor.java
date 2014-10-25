@@ -1,6 +1,7 @@
 package com.backbase.camel.hystrix;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.Processor;
 import org.apache.camel.RuntimeCamelException;
 
@@ -36,6 +37,9 @@ public class SyncHystrixCommandProcessor implements Processor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
+        // -- set Camel Message Exchange Pattern to Synchronous Request-Response
+        exchange.setPattern(ExchangePattern.InOut);
+
         // -- execute synchronous Hystrix command
         Object response  = new GenericCommand(exchange).execute();
 
@@ -53,7 +57,8 @@ public class SyncHystrixCommandProcessor implements Processor {
          * @param exchange the current Camel exchange
          */
         private GenericCommand(Exchange exchange) {
-            super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(actualProcessor.getClass().getSimpleName())).andCommandKey(
+            super(Setter.withGroupKey(
+                    HystrixCommandGroupKey.Factory.asKey(actualProcessor.getClass().getSimpleName())).andCommandKey(
                     HystrixCommandKey.Factory.asKey(exchange.getFromRouteId())));
 
             this.exchange = exchange;
