@@ -9,7 +9,9 @@
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
 
-    <name>The bridge between Apache Camel and Netflix Hystrix</name>
+    <name>Backbase :: Camel :: Hystrix Bridge</name>
+    <description>The bridge between Apache Camel and Netflix Hystrix</description>
+
     <organization>
         <name>Backbase B.V.</name>
         <url>http://www.backbase.com</url>
