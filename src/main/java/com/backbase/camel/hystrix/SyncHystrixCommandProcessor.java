@@ -59,7 +59,7 @@ public class SyncHystrixCommandProcessor implements Processor {
         private GenericCommand(Exchange exchange) {
             super(Setter.withGroupKey(
                     HystrixCommandGroupKey.Factory.asKey(actualProcessor.getClass().getSimpleName())).andCommandKey(
-                    HystrixCommandKey.Factory.asKey(exchange.getFromRouteId())));
+                    HystrixCommandKey.Factory.asKey(exchange.getUnitOfWork().getRouteContext().getRoute().getId())));
 
             this.exchange = exchange;
         }
