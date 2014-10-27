@@ -30,7 +30,7 @@ public class GoogleGeoCodesRoutes extends HystrixRestRouteBuilder {
     private class FallbackProcessor implements Processor {
         @Override
         public void process(Exchange exchange) throws Exception {
-            exchange.getIn().setBody("{\"error\" : \"Service is not available\"}");
+            exchange.getIn().setBody("{\"error\" : \"Service is not available. Fallback stub.\"}");
         }
     }
 }
