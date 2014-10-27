@@ -20,7 +20,8 @@ public class GoogleGeoCodesRoutes extends RouteBuilder {
             .setHeader("lat",constant("-73.961452"))
             .setHeader(Exchange.HTTP_QUERY, simple("latlng=${headers.long},${headers.lat}"))
             .doTry()
-                .process(new SyncHystrixCommandProcessor(new GetGoogleGeoCodes(), new FallbackProcessor()))
+                .process(new SyncHystrixCommandProcessor(this.getClass().getSimpleName(),
+                        new GetGoogleGeoCodes(), new FallbackProcessor()))
             .doCatch(HystrixRuntimeException.class)
                 .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
                 .setBody(constant("{\"error\" : \"Service is not available.\"}"))

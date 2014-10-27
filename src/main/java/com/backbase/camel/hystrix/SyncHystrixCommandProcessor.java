@@ -13,6 +13,7 @@ import com.netflix.hystrix.HystrixCommandKey;
 public class SyncHystrixCommandProcessor implements Processor {
     private Processor actualProcessor;
     private Processor fallbackProcessor;
+    private String groupName;
 
     /**
      * Construct Synchronous (InOut MEP) Camel processor for Hystrix Command
@@ -20,8 +21,8 @@ public class SyncHystrixCommandProcessor implements Processor {
      *
      * @param actualProcessor the actual Camel processor that will be used to process the exchange
      */
-    public SyncHystrixCommandProcessor(Processor actualProcessor) {
-        this(actualProcessor, null);
+    public SyncHystrixCommandProcessor(String groupName, Processor actualProcessor) {
+        this(groupName, actualProcessor, null);
     }
 
     /**
@@ -31,9 +32,10 @@ public class SyncHystrixCommandProcessor implements Processor {
      * @param actualProcessor the actual Camel processor that will be used to process the exchange
      * @param fallbackProcessor the fallback Camel processor that will be used in case of open circuit
      */
-    public SyncHystrixCommandProcessor(Processor actualProcessor, Processor fallbackProcessor) {
+    public SyncHystrixCommandProcessor(String groupName, Processor actualProcessor, Processor fallbackProcessor) {
         this.actualProcessor = actualProcessor;
         this.fallbackProcessor = fallbackProcessor;
+        this.groupName = groupName;
     }
 
     @Override
@@ -58,7 +60,7 @@ public class SyncHystrixCommandProcessor implements Processor {
          */
         private GenericCommand(Exchange exchange) {
             super(Setter.withGroupKey(
-                    HystrixCommandGroupKey.Factory.asKey(actualProcessor.getClass().getSimpleName())).andCommandKey(
+                    HystrixCommandGroupKey.Factory.asKey(groupName)).andCommandKey(
                     HystrixCommandKey.Factory.asKey(exchange.getUnitOfWork().getRouteContext().getRoute().getId())));
 
             this.exchange = exchange;
@@ -113,8 +115,8 @@ public class SyncHystrixCommandProcessor implements Processor {
      * @param fallbackProcessor the fallback Camel processor that will be used in case of open circuit
      * @return the Synchronous Histrix Processor
      */
-    public static Processor sync(Processor actualProcessor, Processor fallbackProcessor) {
-        return new SyncHystrixCommandProcessor(actualProcessor, fallbackProcessor);
+    public static Processor sync(String groupName, Processor actualProcessor, Processor fallbackProcessor) {
+        return new SyncHystrixCommandProcessor(groupName, actualProcessor, fallbackProcessor);
     }
 
     /**
@@ -123,7 +125,7 @@ public class SyncHystrixCommandProcessor implements Processor {
      * @param actualProcessor the actual Camel processor that will be used to process the exchange
      * @return the Synchronous Histrix Processor
      */
-    public static Processor sync(Processor actualProcessor) {
-        return new SyncHystrixCommandProcessor(actualProcessor, null);
+    public static Processor sync(String groupName, Processor actualProcessor) {
+        return new SyncHystrixCommandProcessor(groupName, actualProcessor, null);
     }
 }
