@@ -8,7 +8,7 @@ import com.netflix.hystrix.exception.HystrixRuntimeException;
 
 public class GoogleGeoCodesRoutes extends HystrixRestRouteBuilder {
     public GoogleGeoCodesRoutes() {
-        super("http://bb-system-0205.local:9999/maps");
+        super("https://maps.googleapis.com/maps");
     }
 
     public void configure() {
