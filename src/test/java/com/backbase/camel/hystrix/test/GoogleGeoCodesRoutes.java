@@ -12,7 +12,7 @@ public class GoogleGeoCodesRoutes extends HystrixRestRouteBuilder {
     }
 
     public void configure() {
-        from("quartz://geoCodes?trigger.repeatCount=10000&trigger.repeatInterval=300&fireNow=true")
+        from("direct:GetGoogleGeoLocations")
             .routeId("GetGoogleGeoLocations")
             .setHeader("long",constant("40.714224"))
             .setHeader("lat",constant("-73.961452"))
