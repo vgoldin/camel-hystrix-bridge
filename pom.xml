@@ -26,7 +26,9 @@
     </licenses>
 
     <scm>
-        <url>git@github.com:vgoldin/camel-hystrix-bridge.git</url>
+	<connection>scm:git:git@github.com:vgoldin/camel-hystrix-bridge.git</connection>
+    	<developerConnection>scm:git:git@github.com:vgoldin/camel-hystrix-bridge.git</developerConnection>
+        <url>https://github.com/vgoldin/camel-hystrix-bridge</url>
     </scm>
 
     <properties>
