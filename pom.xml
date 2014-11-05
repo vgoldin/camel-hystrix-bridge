@@ -6,7 +6,7 @@
     <groupId>com.backbase.camel</groupId>
     <artifactId>camel-hystrix</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.1</version>
+    <version>0.0.2-SNAPSHOT</version>
 
     <name>Backbase :: Camel :: Hystrix Bridge</name>
     <description>The bridge between Apache Camel and Netflix Hystrix</description>
@@ -28,7 +28,7 @@
 	<connection>scm:git:git@github.com:vgoldin/camel-hystrix-bridge.git</connection>
     	<developerConnection>scm:git:git@github.com:vgoldin/camel-hystrix-bridge.git</developerConnection>
         <url>https://github.com/vgoldin/camel-hystrix-bridge</url>
-      <tag>camel-hystrix-0.0.1</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <properties>
