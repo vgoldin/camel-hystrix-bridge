@@ -10,10 +10,7 @@ import org.apache.camel.component.http.HttpOperationFailedException;
 import org.apache.camel.spi.Language;
 
 public abstract class HystrixRestRouteBuilder extends RouteBuilder {
-    private String basePath;
-
-    public HystrixRestRouteBuilder() {
-    }
+    private final String basePath;
 
     public HystrixRestRouteBuilder(String basePath) {
         this.basePath = basePath;
@@ -82,9 +79,5 @@ public abstract class HystrixRestRouteBuilder extends RouteBuilder {
 
     public Processor sync(Processor actualProcessor, Processor fallbackProcessor) {
         return SyncHystrixCommandProcessor.sync(this.getClass().getSimpleName(), actualProcessor, fallbackProcessor);
-    }
-
-    public void setBasePath(String basePath) {
-        this.basePath = basePath;
     }
 }
