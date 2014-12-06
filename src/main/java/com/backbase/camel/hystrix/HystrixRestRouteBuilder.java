@@ -56,6 +56,7 @@ public abstract class HystrixRestRouteBuilder extends RouteBuilder {
                             exchange.setException(null);
                             exchange.getOut().setFault(false);
 
+                            exchange.getOut().setHeaders(exchange.getIn().getHeaders());
                             exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE, statusCode);
                             exchange.getOut().setBody(((HttpOperationFailedException) exception).getResponseBody());
                         }
