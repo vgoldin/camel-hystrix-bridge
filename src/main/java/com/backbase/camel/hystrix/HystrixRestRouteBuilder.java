@@ -48,7 +48,8 @@ public abstract class HystrixRestRouteBuilder extends RouteBuilder {
                     Exception exception = exchange.getException();
 
                     if (exception instanceof HttpOperationFailedException) {
-                        int statusCode = ((HttpOperationFailedException) exception).getStatusCode();
+                        HttpOperationFailedException httpException = (HttpOperationFailedException) exception;
+                        int statusCode = httpException.getStatusCode();
 
                         if ((statusCode >= 500) && (statusCode <= 599)) {
                             throw exception;
@@ -56,9 +57,9 @@ public abstract class HystrixRestRouteBuilder extends RouteBuilder {
                             exchange.setException(null);
                             exchange.getOut().setFault(false);
 
-                            exchange.getOut().setHeaders(exchange.getIn().getHeaders());
+                            exchange.getOut().setHeader(Exchange.HTTP_URI, httpException.getUri());
                             exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE, statusCode);
-                            exchange.getOut().setBody(((HttpOperationFailedException) exception).getResponseBody());
+                            exchange.getOut().setBody(httpException.getResponseBody());
                         }
                     } else {
                         throw exception;
