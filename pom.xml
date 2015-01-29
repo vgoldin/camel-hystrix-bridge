@@ -137,6 +137,11 @@
                     <instructions>
                         <Include-Resource>{maven-resources}</Include-Resource>
                         <Import-Package>
+                            org.apache.camel;version="${camel-version}",
+                            org.apache.camel.builder;version="${camel-version}",
+                            org.apache.camel.component.http;version="${camel-version}",
+                            org.apache.camel.model;version="${camel-version}",
+                            org.apache.camel.spi;version="${camel-version}",
                             *
                         </Import-Package>
                         <Export-Package>com.backbase.camel.hystrix</Export-Package>
