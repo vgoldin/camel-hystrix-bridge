@@ -1,4 +1,4 @@
-package com.backbase.camel.hystrix.example;
+package com.backbase.camel.hystrix.test.example;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
