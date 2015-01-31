@@ -34,37 +34,41 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <camel-version>[2.10.0,2.14.0]</camel-version>
-        <hystrix-version>1.4.0-RC6</hystrix-version>
-        <guava-version>17.0</guava-version>
+        <camel.version>[2.10.0,2.14.0]</camel.version>
+        <hystrix.version>1.4.0-RC6</hystrix.version>
+        <guava.version>17.0</guava.version>
+        <archaius-core-bundle.version>0.6.3_1</archaius-core-bundle.version>
+        <rxjava.version>1.0.4</rxjava.version>
+
+        <build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
-            <version>${camel-version}</version>
+            <version>${camel.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jetty</artifactId>
-            <version>${camel-version}</version>
+            <version>${camel.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-http</artifactId>
-            <version>${camel-version}</version>
+            <version>${camel.version}</version>
         </dependency>
         <dependency>
             <groupId>com.netflix.hystrix</groupId>
             <artifactId>hystrix-core</artifactId>
-            <version>${hystrix-version}</version>
+            <version>${hystrix.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>${guava-version}</version>
+            <version>${guava.version}</version>
         </dependency>
 
         <!-- testing -->
@@ -90,25 +94,32 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-test</artifactId>
-            <version>${camel-version}</version>
+            <version>${camel.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-quartz</artifactId>
-            <version>${camel-version}</version>
+            <version>${camel.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.netflix.hystrix</groupId>
             <artifactId>hystrix-metrics-event-stream</artifactId>
-            <version>${hystrix-version}</version>
+            <version>${hystrix.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <defaultGoal>install</defaultGoal>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
 
         <plugins>
             <plugin>
@@ -137,16 +148,39 @@
                     <instructions>
                         <Include-Resource>{maven-resources}</Include-Resource>
                         <Import-Package>
-                            org.apache.camel;version="${camel-version}",
-                            org.apache.camel.builder;version="${camel-version}",
-                            org.apache.camel.component.http;version="${camel-version}",
-                            org.apache.camel.model;version="${camel-version}",
-                            org.apache.camel.spi;version="${camel-version}",
+                            org.apache.camel;version="${camel.version}",
+                            org.apache.camel.builder;version="${camel.version}",
+                            org.apache.camel.component.http;version="${camel.version}",
+                            org.apache.camel.model;version="${camel.version}",
+                            org.apache.camel.spi;version="${camel.version}",
                             *
                         </Import-Package>
                         <Export-Package>com.backbase.camel.hystrix</Export-Package>
                     </instructions>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>${build-helper-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>target/classes/features.xml</file>
+                                    <type>xml</type>
+                                    <classifier>features</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
