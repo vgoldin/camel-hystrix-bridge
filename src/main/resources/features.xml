@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="camel-hystrix-bridge-${project.version}"
+          xmlns="http://karaf.apache.org/xmlns/features/v1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.0.0 http://karaf.apache.org/xmlns/features/v1.0.0">
+    <repository>mvn:org.apache.camel.karaf/apache-camel/2.12.4/xml/features</repository>
+
+    <feature name='camel-hystrix-bridge' version='${project.version}'>
+        <feature version="${camel.version}">camel-http</feature>
+
+        <bundle dependency="true">mvn:com.google.guava/guava/${guava.version}</bundle>
+        <bundle dependency="true">mvn:com.netflix.hystrix/hystrix-core/${hystrix.version}</bundle>
+        <bundle dependency="true">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.archaius-core/${archaius-core-bundle.version}
+        </bundle>
+        <bundle dependency="true">mvn:io.reactivex/rxjava/${rxjava.version}</bundle>
+
+        <bundle>mvn:com.backbase.camel/camel-hystrix/${project.version}</bundle>
+    </feature>
+</features>
