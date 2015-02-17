@@ -1,0 +1,25 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+
+    <bean id="camelServlet" class="org.apache.camel.component.servlet.CamelHttpTransportServlet"/>
+
+    <osgi:service ref="camelServlet">
+        <osgi:interfaces>
+            <value>javax.servlet.Servlet</value>
+            <value>org.apache.camel.component.http.CamelServlet</value>
+        </osgi:interfaces>
+        <osgi:service-properties>
+            <entry key="alias" value="/camel/hystrix" />
+            <entry key="matchOnUriPrefix" value="true" />
+            <entry key="servlet-name" value="CamelServlet"/>
+            <entry key="osgi.web.contextpath" value="/camel/hystrix" />
+        </osgi:service-properties>
+    </osgi:service>
+
+
+
+</beans>

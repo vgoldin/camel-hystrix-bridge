@@ -15,6 +15,7 @@
         </bundle>
         <bundle dependency="true">mvn:io.reactivex/rxjava/${rxjava.version}</bundle>
 
+        <bundle>wrap:mvn:com.netflix.hystrix/hystrix-metrics-event-stream/${hystrix.version}</bundle>
         <bundle>mvn:com.backbase.camel/camel-hystrix/${project.version}</bundle>
     </feature>
 </features>
