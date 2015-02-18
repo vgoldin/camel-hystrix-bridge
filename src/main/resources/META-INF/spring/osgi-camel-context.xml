@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <bean id="camelServlet" class="org.apache.camel.component.servlet.CamelHttpTransportServlet" />
+
+    <osgi:service ref="camelServlet">
+        <osgi:interfaces>
+            <value>javax.servlet.Servlet</value>
+            <value>org.apache.camel.component.http.CamelServlet</value>
+        </osgi:interfaces>
+        <osgi:service-properties>
+            <entry key="alias" value="/camel/hystrix" />
+            <entry key="matchOnUriPrefix" value="true" />
+            <entry key="servlet-name" value="CamelServlet"/>
+            <entry key="osgi.web.contextpath" value="/camel/hystrix" />
+        </osgi:service-properties>
+    </osgi:service>
+
+    <bean id="httpRegistryFactory" class="com.backbase.camel.hystrix.stream.HttpRegistryFactory">
+        <constructor-arg>
+            <ref bean="camelServlet"/>
+        </constructor-arg>
+    </bean>
+
+    <bean id="httpRegistry" factory-bean="httpRegistryFactory" factory-method="getDefaultHttpRegistry"/>
+
+    <bean id="servlet" class="org.apache.camel.component.servlet.ServletComponent">
+        <property name="httpRegistry" ref="httpRegistry" />
+    </bean>
+
+    <bean id="streamRoute" class="com.backbase.camel.hystrix.stream.HystrixMetricsStreamRoute"/>
+
+    <camel:camelContext id="TestRestlet" xmlns="http://camel.apache.org/schema/spring">
+        <routeBuilder ref="streamRoute"/>
+    </camel:camelContext>
+</beans>

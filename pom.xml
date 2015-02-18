@@ -184,7 +184,6 @@
                             org.apache.camel.model;version="${camel.version}",
                             org.apache.camel.spi;version="${camel.version}",
                             org.apache.camel.support;version="${camel.version}",
-                            org.apache.camel.management.event;version="${camel.version}",
                             org.apache.camel.component.servlet;version="${camel.version}",
                             org.apache.camel.component.http;version="${camel.version}",
                             javax.servlet;version="${servlet-api.version}",
@@ -192,7 +191,6 @@
                             *
                         </Import-Package>
                         <Export-Package>
-                            META-INF.hystrix.osgi,
                             com.backbase.camel.hystrix,
                             com.backbase.camel.hystrix.stream
                         </Export-Package>
