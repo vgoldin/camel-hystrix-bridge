@@ -7,6 +7,7 @@
 
     <feature name='camel-hystrix-bridge' version='${project.version}'>
         <feature version="${camel.version}">camel-http</feature>
+        <feature version="${camel.version}">camel-servlet</feature>
 
         <bundle dependency="true">mvn:com.google.guava/guava/${guava.version}</bundle>
         <bundle dependency="true">mvn:com.netflix.hystrix/hystrix-core/${hystrix.version}</bundle>
