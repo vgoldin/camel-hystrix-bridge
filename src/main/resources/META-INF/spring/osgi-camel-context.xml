@@ -37,7 +37,7 @@
 
     <bean id="streamRoute" class="com.backbase.camel.hystrix.stream.HystrixMetricsStreamRoute"/>
 
-    <camel:camelContext id="TestRestlet" xmlns="http://camel.apache.org/schema/spring">
+    <camel:camelContext id="HystrixStreamRoute" xmlns="http://camel.apache.org/schema/spring">
         <routeBuilder ref="streamRoute"/>
     </camel:camelContext>
 </beans>
