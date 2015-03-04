@@ -23,6 +23,18 @@
         </osgi:service-properties>
     </osgi:service>
 
+    <bean id="dynamicConfigUpdater" class="com.backbase.camel.hystrix.osgi.DynamicConfigUpdater"/>
+
+    <osgi:service ref="dynamicConfigUpdater">
+        <osgi:interfaces>
+            <value>org.osgi.service.cm.ManagedService</value>
+        </osgi:interfaces>
+        <osgi:service-properties>
+            <entry key="service.pid" value="com.backbase.camel.hystrix"/>
+        </osgi:service-properties>
+    </osgi:service>
+
+
     <bean id="httpRegistryFactory" class="com.backbase.camel.hystrix.stream.HttpRegistryFactory">
         <constructor-arg>
             <ref bean="camelServlet"/>
