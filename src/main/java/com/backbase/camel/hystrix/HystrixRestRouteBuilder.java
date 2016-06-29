@@ -43,34 +43,12 @@ public abstract class HystrixRestRouteBuilder extends RouteBuilder {
                     template = exchange.getContext().createProducerTemplate();
                 }
 
-                Language language = exchange.getContext().resolveLanguage("simple");
-                Expression expression = language.createExpression(uri);
-                String uri = expression.evaluate(exchange, String.class);
-
+                String resolvedURI = resolveURI(exchange, uri);
                 exchange.getIn().setHeader(Exchange.HTTP_METHOD, firstNonNull(verb, "GET"));
-
-                Exchange response = template.send(uri, exchange);
+                Exchange response = template.send(resolvedURI, exchange);
 
                 if (exchange.isFailed()) {
-                    Exception exception = exchange.getException();
-
-                    if (exception instanceof HttpOperationFailedException) {
-                        HttpOperationFailedException httpException = (HttpOperationFailedException) exception;
-                        int statusCode = httpException.getStatusCode();
-
-                        if ((statusCode >= 500) && (statusCode <= 599)) {
-                            throw exception;
-                        } else {
-                            exchange.setException(null);
-                            exchange.getOut().setFault(false);
-
-                            exchange.getOut().setHeader(Exchange.HTTP_URI, httpException.getUri());
-                            exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE, statusCode);
-                            exchange.getOut().setBody(httpException.getResponseBody());
-                        }
-                    } else {
-                        throw exception;
-                    }
+                    processFailedExchange(exchange);
                 } else {
                     exchange.setOut(response.getOut());
                 }
@@ -88,5 +66,37 @@ public abstract class HystrixRestRouteBuilder extends RouteBuilder {
 
     public Processor sync(Processor actualProcessor, Processor fallbackProcessor) {
         return SyncHystrixCommandProcessor.sync(this.getClass().getSimpleName(), actualProcessor, fallbackProcessor);
+    }
+
+    private static String resolveURI(Exchange exchange, String template) {
+        Language language = exchange.getContext().resolveLanguage("simple");
+        Expression expression = language.createExpression(template);
+        return expression.evaluate(exchange, String.class);
+    }
+
+    private static void processFailedExchange(Exchange exchange) throws Exception {
+        Exception exception = exchange.getException();
+
+        if (exception instanceof HttpOperationFailedException) {
+            HttpOperationFailedException httpException = (HttpOperationFailedException) exception;
+            int statusCode = httpException.getStatusCode();
+
+            if ((statusCode >= 500) && (statusCode <= 599)) {
+                throw exception;
+            } else {
+                processClientSideError(exchange, httpException, statusCode);
+            }
+        } else {
+            throw exception;
+        }
+    }
+
+    private static void processClientSideError(Exchange exchange, HttpOperationFailedException httpException, int statusCode) {
+        exchange.setException(null);
+        exchange.getOut().setFault(false);
+
+        exchange.getOut().setHeader(Exchange.HTTP_URI, httpException.getUri());
+        exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE, statusCode);
+        exchange.getOut().setBody(httpException.getResponseBody());
     }
 }
