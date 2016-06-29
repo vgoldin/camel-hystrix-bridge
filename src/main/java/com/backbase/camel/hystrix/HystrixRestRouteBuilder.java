@@ -1,16 +1,20 @@
 package com.backbase.camel.hystrix;
 
-import static com.google.common.base.Objects.firstNonNull;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Expression;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.http.HttpOperationFailedException;
+import org.apache.camel.http.common.HttpOperationFailedException;
 import org.apache.camel.spi.Language;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static com.google.common.base.MoreObjects.firstNonNull;
 
 public abstract class HystrixRestRouteBuilder extends RouteBuilder {
+    private static final Logger logger = LoggerFactory.getLogger(HystrixRestRouteBuilder.class);
+
     private final String basePath;
 
     public HystrixRestRouteBuilder(String basePath) {
@@ -44,7 +48,11 @@ public abstract class HystrixRestRouteBuilder extends RouteBuilder {
                 }
 
                 String resolvedURI = resolveURI(exchange, uri);
-                exchange.getIn().setHeader(Exchange.HTTP_METHOD, firstNonNull(verb, "GET"));
+                String httpMethod = firstNonNull(verb, "GET");
+
+                logger.debug("Executing http {} method: {}", httpMethod, resolvedURI);
+
+                exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
                 Exchange response = template.send(resolvedURI, exchange);
 
                 if (exchange.isFailed()) {
@@ -81,12 +89,16 @@ public abstract class HystrixRestRouteBuilder extends RouteBuilder {
             HttpOperationFailedException httpException = (HttpOperationFailedException) exception;
             int statusCode = httpException.getStatusCode();
 
+            logger.debug("Hystrix exchange has failed with http status code {}", statusCode);
+
             if ((statusCode >= 500) && (statusCode <= 599)) {
                 throw exception;
             } else {
                 processClientSideError(exchange, httpException, statusCode);
             }
         } else {
+            logger.error("Hystrix exchange has failed with an unexpected exception", exception);
+
             throw exception;
         }
     }
