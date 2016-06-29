@@ -1,6 +1,6 @@
 package com.backbase.camel.hystrix.stream;
 
-import org.apache.camel.component.http.CamelServlet;
+import org.apache.camel.http.common.CamelServlet;
 import org.apache.camel.component.servlet.DefaultHttpRegistry;
 
 public class HttpRegistryFactory {
