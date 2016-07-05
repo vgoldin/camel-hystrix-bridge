@@ -6,6 +6,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.http.common.HttpOperationFailedException;
+import org.apache.camel.processor.DefaultExchangeFormatter;
 import org.apache.camel.spi.Language;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,7 @@ public abstract class HystrixRestRouteBuilder extends RouteBuilder {
                 String resolvedURI = resolveURI(exchange, uri);
                 String httpMethod = firstNonNull(verb, "GET");
 
-                logger.debug("Executing http {} method: {}", httpMethod, resolvedURI);
+                logRequest(exchange, resolvedURI, httpMethod);
 
                 exchange.getIn().setHeader(Exchange.HTTP_METHOD, httpMethod);
                 Exchange response = template.send(resolvedURI, exchange);
@@ -110,5 +111,15 @@ public abstract class HystrixRestRouteBuilder extends RouteBuilder {
         exchange.getOut().setHeader(Exchange.HTTP_URI, httpException.getUri());
         exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE, statusCode);
         exchange.getOut().setBody(httpException.getResponseBody());
+    }
+
+    private static void logRequest(Exchange exchange, String resolvedURI, String httpMethod) {
+        if (logger.isDebugEnabled()) {
+            DefaultExchangeFormatter formatter = new DefaultExchangeFormatter();
+            formatter.setShowAll(true);
+
+            logger.debug("Executing http {} method: {}", httpMethod, resolvedURI);
+            logger.debug(formatter.format(exchange));
+        }
     }
 }
